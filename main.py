@@ -136,6 +136,21 @@ with st.expander("📊 생육 결과"):
     st.metric("최고 평균 생중량", mean_weight_by_ec[optimal_ec], help="최적 EC 농도에 해당하는 평균 생중량을 강조합니다.")
     
     # EC별 생육 비교
-    fig2 = make_subplots(rows=2, cols=2, subplot_titles=["평균 생중량", "
-
-
+    fig2 = make_subplots(rows=2, cols=2, subplot_titles=["평균 생중량", "평균 잎 수", "평균 지상부 길이", "개체수 비교"])
+    
+    # 생중량 비교
+    weight_data = [growth_data[school]["생중량(g)"].mean() for school in ec_conditions]
+    fig2.add_trace(go.Bar(x=list(ec_conditions.keys()), y=weight_data, name="평균 생중량"), row=1, col=1)
+    
+    # 잎 수 비교
+    leaf_count_data = [growth_data[school]["잎 수(장)"].mean() for school in ec_conditions]
+    fig2.add_trace(go.Bar(x=list(ec_conditions.keys()), y=leaf_count_data, name="평균 잎 수"), row=1, col=2)
+    
+    # 지상부 길이 비교
+    ground_length_data = [growth_data[school]["지상부 길이(mm)"].mean() for school in ec_conditions]
+    fig2.add_trace(go.Bar(x=list(ec_conditions.keys()), y=ground_length_data, name="평균 지상부 길이"), row=2, col=1)
+    
+    # 개체수 비교
+    count_data = [len(growth_data[school]) for school in ec_conditions]
+    fig2.add_trace(go.Bar(x=list(ec_conditions.keys()), y=count_data, name="개체수"), row=2, col=2)
+    
