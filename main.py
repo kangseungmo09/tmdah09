@@ -21,7 +21,17 @@ html, body, [class*="css"] {
 def get_data_files(folder_path):
     folder = Path(folder_path)
     files = [file for file in folder.iterdir() if unicodedata.normalize("NFC", file.name) == file.name]
-    return files
+    
+    # 확장자 중복 처리 (예: .xlsx.xlsx -> .xlsx, .csv.csv -> .csv)
+    cleaned_files = []
+    for file in files:
+        if file.suffix == '.xlsx' and file.name.endswith('.xlsx.xlsx'):
+            cleaned_files.append(file.with_suffix('.xlsx'))
+        elif file.suffix == '.csv' and file.name.endswith('.csv.csv'):
+            cleaned_files.append(file.with_suffix('.csv'))
+        else:
+            cleaned_files.append(file)
+    return cleaned_files
 
 # 데이터 로딩 함수
 @st.cache_data
@@ -31,7 +41,7 @@ def load_data():
     env_data = {}
     for file in env_data_files:
         if file.suffix == '.csv':
-            school_name = file.stem
+            school_name = file.stem.replace("_환경데이터", "")  # 파일명에서 '환경데이터' 부분 제거
             env_data[school_name] = pd.read_csv(file)
     
     # 생육 데이터 로딩
